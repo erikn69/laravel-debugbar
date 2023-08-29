@@ -12,7 +12,7 @@ use Illuminate\Foundation\Application;
 class Stopwatch extends Extension
 {
     /**
-     * @var \Barryvdh\Debugbar\LaravelDebugbar
+     * @var \Barryvdh\Debugbar\LaravelDebugbar|null
      */
     protected $debugbar;
 

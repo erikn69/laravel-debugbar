@@ -13,7 +13,7 @@ use Twig_SimpleFunction;
 class Debug extends Extension
 {
     /**
-     * @var \Barryvdh\Debugbar\LaravelDebugbar
+     * @var \Barryvdh\Debugbar\LaravelDebugbar|null
      */
     protected $debugbar;
 

@@ -131,7 +131,7 @@ class JavascriptRenderer extends BaseJavascriptRenderer
      *
      * @param string|array $uri
      * @param string $root
-     * @return string
+     * @return mixed
      */
     protected function makeUriRelativeTo($uri, $root)
     {

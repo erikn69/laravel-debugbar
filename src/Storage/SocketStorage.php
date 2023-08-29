@@ -78,7 +78,7 @@ class SocketStorage implements StorageInterface
      */
     function get($id)
     {
-        //
+        return [];
     }
 
     /**
@@ -86,7 +86,7 @@ class SocketStorage implements StorageInterface
      */
     function find(array $filters = array(), $max = 20, $offset = 0)
     {
-        //
+        return [];
     }
 
     /**

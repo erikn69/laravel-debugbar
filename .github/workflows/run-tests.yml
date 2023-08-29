@@ -3,7 +3,7 @@ name: Unit Tests
 on:
   push:
     branches:
-      - master
+      - patch-13
   pull_request:
     branches:
       - "*"

@@ -13,7 +13,7 @@ class EventCollector extends TimeDataCollector
     /** @var Dispatcher */
     protected $events;
 
-    /** @var integer */
+    /** @var float */
     protected $previousTime;
 
     public function __construct($requestStartTime = null)

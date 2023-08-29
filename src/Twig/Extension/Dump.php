@@ -10,7 +10,7 @@ use DebugBar\DataFormatter\DataFormatterInterface;
 class Dump extends Extension
 {
     /**
-     * @var \DebugBar\DataFormatter\DataFormatter
+     * @var \DebugBar\DataFormatter\DataFormatterInterface
      */
     protected $formatter;
 

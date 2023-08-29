@@ -93,7 +93,7 @@ class LaravelDebugbar extends DebugBar
     protected $is_lumen = false;
 
     /**
-     * @param Application $app
+     * @param \Illuminate\Foundation\Application $app
      */
     public function __construct($app = null)
     {
@@ -191,7 +191,7 @@ class LaravelDebugbar extends DebugBar
         if ($this->shouldCollect('events', false) && isset($this->app['events'])) {
             try {
                 $startTime = $this->app['request']->server('REQUEST_TIME_FLOAT');
-                $eventCollector = new EventCollector($startTime);
+                $eventCollector = new EventCollector((float) $startTime);
                 $this->addCollector($eventCollector);
                 $this->app['events']->subscribe($eventCollector);
             } catch (\Exception $e) {
@@ -299,6 +299,7 @@ class LaravelDebugbar extends DebugBar
                     false
                 )
             ) {
+                /** @var TimeDataCollector */
                 $timeCollector = $debugbar->getCollector('time');
             } else {
                 $timeCollector = null;
@@ -528,7 +529,7 @@ class LaravelDebugbar extends DebugBar
             try {
                 $collectValues = $this->app['config']->get('debugbar.options.cache.values', true);
                 $startTime = $this->app['request']->server('REQUEST_TIME_FLOAT');
-                $cacheCollector = new CacheCollector($startTime, $collectValues);
+                $cacheCollector = new CacheCollector((float) $startTime, $collectValues);
                 $this->addCollector($cacheCollector);
                 $this->app['events']->subscribe($cacheCollector);
             } catch (\Exception $e) {
@@ -560,7 +561,7 @@ class LaravelDebugbar extends DebugBar
      *
      * @param DataCollectorInterface $collector
      *
-     * @throws DebugBarException
+     * @throws \DebugBar\DebugBarException
      * @return $this
      */
     public function addCollector(DataCollectorInterface $collector)
@@ -602,7 +603,7 @@ class LaravelDebugbar extends DebugBar
     public function startMeasure($name, $label = null)
     {
         if ($this->hasCollector('time')) {
-            /** @var \DebugBar\DataCollector\TimeDataCollector $collector */
+            /** @var TimeDataCollector $collector */
             $collector = $this->getCollector('time');
             $collector->startMeasure($name, $label);
         }
@@ -616,7 +617,7 @@ class LaravelDebugbar extends DebugBar
     public function stopMeasure($name)
     {
         if ($this->hasCollector('time')) {
-            /** @var \DebugBar\DataCollector\TimeDataCollector $collector */
+            /** @var TimeDataCollector $collector */
             $collector = $this->getCollector('time');
             try {
                 $collector->stopMeasure($name);
@@ -655,7 +656,7 @@ class LaravelDebugbar extends DebugBar
      * Returns a JavascriptRenderer for this instance
      *
      * @param string $baseUrl
-     * @param string $basePathng
+     * @param string $basePath
      * @return JavascriptRenderer
      */
     public function getJavascriptRenderer($baseUrl = null, $basePath = null)
@@ -703,7 +704,7 @@ class LaravelDebugbar extends DebugBar
 
         if ($this->app->bound(SessionManager::class)) {
 
-            /** @var \Illuminate\Session\SessionManager $sessionManager */
+            /** @var \Illuminate\Contracts\Session\Session|\Symfony\Component\HttpFoundation\Session\SessionInterface $sessionManager */
             $sessionManager = $app->make(SessionManager::class);
             $httpDriver = new SymfonyHttpDriver($sessionManager, $response);
             $this->setHttpDriver($httpDriver);
@@ -961,7 +962,7 @@ class LaravelDebugbar extends DebugBar
     public function addMeasure($label, $start, $end)
     {
         if ($this->hasCollector('time')) {
-            /** @var \DebugBar\DataCollector\TimeDataCollector $collector */
+            /** @var TimeDataCollector $collector */
             $collector = $this->getCollector('time');
             $collector->addMeasure($label, $start, $end);
         }
@@ -977,7 +978,7 @@ class LaravelDebugbar extends DebugBar
     public function measure($label, \Closure $closure)
     {
         if ($this->hasCollector('time')) {
-            /** @var \DebugBar\DataCollector\TimeDataCollector $collector */
+            /** @var TimeDataCollector $collector */
             $collector = $this->getCollector('time');
             $result = $collector->measure($label, $closure);
         } else {
@@ -988,8 +989,6 @@ class LaravelDebugbar extends DebugBar
 
     /**
      * Collect data in a CLI request
-     *
-     * @return array
      */
     public function collectConsole()
     {
@@ -1128,7 +1127,7 @@ class LaravelDebugbar extends DebugBar
     {
         $prefix = $this->app['config']->get('debugbar.route_prefix');
         $response->headers->set('X-Clockwork-Id', $this->getCurrentRequestId(), true);
-        $response->headers->set('X-Clockwork-Version', 1, true);
+        $response->headers->set('X-Clockwork-Version', '1', true);
         $response->headers->set('X-Clockwork-Path', $prefix . '/clockwork/', true);
     }
 
@@ -1158,12 +1157,7 @@ class LaravelDebugbar extends DebugBar
      */
     private function getMonologLogger()
     {
-        // The logging was refactored in Laravel 5.6
-        if ($this->checkVersion('5.6')) {
-            $logger = $this->app['log']->getLogger();
-        } else {
-            $logger = $this->app['log']->getMonolog();
-        }
+        $logger = $this->app['log']->getLogger();
 
         if (get_class($logger) !== 'Monolog\Logger') {
             throw new Exception('Logger is not a Monolog\Logger instance');

@@ -1,0 +1,26 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Instanceof between string and Closure will always evaluate to false\\.$#"
+			count: 1
+			path: src/DataCollector/RouteCollector.php
+
+		-
+			message: "#^Call to function is_object\\(\\) with ''\\|'0' will always evaluate to false\\.$#"
+			count: 1
+			path: src/DataCollector/ViewCollector.php
+
+		-
+			message: "#^Access to an undefined property Symfony\\\\Component\\\\HttpFoundation\\\\Response\\:\\:\\$original\\.$#"
+			count: 1
+			path: src/LaravelDebugbar.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Mail\\\\Mailer\\:\\:getSwiftMailer\\(\\)\\.$#"
+			count: 1
+			path: src/LaravelDebugbar.php
+
+		-
+			message: "#^Parameter \\#1 \\$app of class Barryvdh\\\\Debugbar\\\\DataCollector\\\\FilesCollector constructor expects Illuminate\\\\Container\\\\Container\\|null, Illuminate\\\\Contracts\\\\Foundation\\\\Application given\\.$#"
+			count: 1
+			path: src/LaravelDebugbar.php

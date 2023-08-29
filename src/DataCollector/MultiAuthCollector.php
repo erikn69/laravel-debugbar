@@ -99,7 +99,7 @@ class MultiAuthCollector extends DataCollector implements Renderable
 
     /**
      * Get displayed user information
-     * @param \Illuminate\Auth\UserInterface $user
+     * @param Authenticatable|null $user
      * @return array
      */
     protected function getUserInformation($user = null)
@@ -114,15 +114,12 @@ class MultiAuthCollector extends DataCollector implements Renderable
 
         // The default auth identifer is the ID number, which isn't all that
         // useful. Try username and email.
-        $identifier = $user instanceof Authenticatable ? $user->getAuthIdentifier() : $user->id;
+        $identifier = $user instanceof Authenticatable ? $user->getAuthIdentifier() : $user->getKey();
         if (is_numeric($identifier)) {
-            try {
-                if (isset($user->username)) {
-                    $identifier = $user->username;
-                } elseif (isset($user->email)) {
-                    $identifier = $user->email;
-                }
-            } catch (\Throwable $e) {
+            if (isset($user->username)) {
+                $identifier = $user->username;
+            } elseif (isset($user->email)) {
+                $identifier = $user->email;
             }
         }
 

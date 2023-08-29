@@ -78,7 +78,7 @@ class RouteCollector extends DataCollector implements Renderable
         $action = $route->getAction();
 
         $result = [
-           'uri' => $uri ?: '-',
+           'uri' => $route->uri() ? $uri : '-',
         ];
 
         $result = array_merge($result, $action);
@@ -161,19 +161,6 @@ class RouteCollector extends DataCollector implements Renderable
             ];
         }
         return $widgets;
-    }
-
-    /**
-     * Display the route information on the console.
-     *
-     * @param  array $routes
-     * @return void
-     */
-    protected function displayRoutes(array $routes)
-    {
-        $this->table->setHeaders($this->headers)->setRows($routes);
-
-        $this->table->render($this->getOutput());
     }
 
     /**

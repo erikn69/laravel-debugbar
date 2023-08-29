@@ -27,7 +27,7 @@ class StopwatchNode extends Node
     }
 
     /**
-     * @param \Twig_Compiler|\Twig\Compiler $env
+     * @param \Twig_Compiler|\Twig\Compiler $compiler
      * @return void
      */
     public function compile($compiler)

@@ -17,7 +17,6 @@ if (!function_exists('debug')) {
      * Adds one or more messages to the MessagesCollector
      *
      * @param  mixed ...$value
-     * @return string
      */
     function debug($value)
     {

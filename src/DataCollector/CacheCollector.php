@@ -25,11 +25,12 @@ class CacheCollector extends TimeDataCollector
 
     public function __construct($requestStartTime, $collectValues)
     {
-        parent::__construct();
+        parent::__construct($requestStartTime);
 
         $this->collectValues = $collectValues;
     }
 
+    /** @param CacheHit $event */
     public function onCacheEvent(CacheEvent $event)
     {
         $class = get_class($event);

@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 
 /**
  * Collects data about SQL statements executed with PDO
+ *
+ * @method \Barryvdh\Debugbar\DataFormatter\QueryFormatter getDataFormatter()
  */
 class QueryCollector extends PDOCollector
 {
@@ -447,7 +449,6 @@ class QueryCollector extends PDOCollector
      * Collect a database transaction event.
      * @param  string $event
      * @param \Illuminate\Database\Connection $connection
-     * @return array
      */
     public function collectTransactionEvent($event, $connection)
     {

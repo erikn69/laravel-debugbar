@@ -1,0 +1,25 @@
+includes:
+    - vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - config
+        - src
+    excludePaths:
+        - src/Twig
+    level: 5
+    ignoreErrors:
+        # Twig 2 support
+        - '#Twig_#'
+        - '#Twig\\#'
+        - '#StopwatchNode\:\:getNode\(\)#'
+        - '#Barryvdh\\Debugbar\\Twig\\Node\\Node\:\:__construct\(\)#'
+        # Lumen Support
+        - '#Lumen#'
+        # Livewire Support
+        - '#Livewire\\Component#'
+        - '#Livewire\\Livewire#'
+        # Telescope support
+        - '#Laravel\\Telescope#'

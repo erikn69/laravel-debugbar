@@ -19,7 +19,7 @@ class RequestCollector extends DataCollector implements DataCollectorInterface, 
 {
     /** @var \Symfony\Component\HttpFoundation\Request $request */
     protected $request;
-    /** @var  \Symfony\Component\HttpFoundation\Request $response */
+    /** @var  \Symfony\Component\HttpFoundation\Response $response */
     protected $response;
     /** @var  \Symfony\Component\HttpFoundation\Session\SessionInterface $session */
     protected $session;
@@ -175,14 +175,12 @@ class RequestCollector extends DataCollector implements DataCollectorInterface, 
             } else {
                 $expires = strtotime($expires);
                 if (false === $expires || -1 == $expires) {
-                    throw new \InvalidArgumentException(
-                        sprintf('The "expires" cookie parameter is not valid.', $expires)
-                    );
+                    throw new \InvalidArgumentException('The "expires" cookie parameter is not valid.');
                 }
             }
 
             $cookie .= '; expires=' . substr(
-                \DateTime::createFromFormat('U', $expires, new \DateTimeZone('UTC'))->format('D, d-M-Y H:i:s T'),
+                \DateTime::createFromFormat('U', (string) $expires, new \DateTimeZone('UTC'))->format('D, d-M-Y H:i:s T'),
                 0,
                 -5
             );

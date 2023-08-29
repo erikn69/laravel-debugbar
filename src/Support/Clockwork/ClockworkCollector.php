@@ -16,7 +16,7 @@ class ClockworkCollector extends DataCollector implements DataCollectorInterface
 {
     /** @var \Symfony\Component\HttpFoundation\Request $request */
     protected $request;
-    /** @var  \Symfony\Component\HttpFoundation\Request $response */
+    /** @var  \Symfony\Component\HttpFoundation\Response $response */
     protected $response;
     /** @var  \Symfony\Component\HttpFoundation\Session\SessionInterface $session */
     protected $session;
@@ -25,7 +25,7 @@ class ClockworkCollector extends DataCollector implements DataCollectorInterface
      * Create a new SymfonyRequestCollector
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Symfony\Component\HttpFoundation\Request $response
+     * @param \Symfony\Component\HttpFoundation\Response $response
      * @param \Symfony\Component\HttpFoundation\Session\SessionInterface $session
      */
     public function __construct($request, $response, $session = null)
@@ -48,7 +48,7 @@ class ClockworkCollector extends DataCollector implements DataCollectorInterface
      */
     public function getWidgets()
     {
-        return null;
+        return [];
     }
 
     /**

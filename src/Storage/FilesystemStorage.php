@@ -91,7 +91,7 @@ class FilesystemStorage implements StorageInterface
     {
         // Sort by modified time, newest first
         $sort = function (\SplFileInfo $a, \SplFileInfo $b) {
-            return strcmp($b->getMTime(), $a->getMTime());
+            return strcmp((string) $b->getMTime(), (string) $a->getMTime());
         };
 
         // Loop through .json files, filter the metadata and stop when max is found.

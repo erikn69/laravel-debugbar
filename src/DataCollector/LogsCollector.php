@@ -41,8 +41,6 @@ class LogsCollector extends MessagesCollector
      * only 24 last of current day
      *
      * @param string $path
-     *
-     * @return array
      */
     public function getStorageLogs($path)
     {
