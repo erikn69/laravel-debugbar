@@ -121,9 +121,10 @@ class QueryCollector extends PDOCollector
      * @param string $query
      * @param array $bindings
      * @param float $time
+     * @param int|null $count
      * @param \Illuminate\Database\Connection $connection
      */
-    public function addQuery($query, $bindings, $time, $connection)
+    public function addQuery($query, $bindings, $time, $connection, $count = null)
     {
         $explainResults = [];
         $time = $time / 1000;
@@ -186,6 +187,7 @@ class QueryCollector extends PDOCollector
             'query' => $query,
             'type' => 'query',
             'bindings' => $this->getDataFormatter()->escapeBindings($bindings),
+            'row_count' => $count,
             'time' => $time,
             'source' => $source,
             'explain' => $explainResults,
@@ -475,6 +477,18 @@ class QueryCollector extends PDOCollector
     }
 
     /**
+     * Collect a database QueryExecuted event.
+     * @param \Illuminate\Database\Events\QueryExecuted $query
+     * @return void
+     */
+    public function collectQueryExecutedEvent($query)
+    {
+        $this->addQuery(
+            (string)$query->sql, $query->bindings, $query->time, $query->connection, $query->rowCount ?? null
+        );
+    }
+
+    /**
      * Reset the queries.
      */
     public function reset()
@@ -502,6 +516,7 @@ class QueryCollector extends PDOCollector
                 'hints' => $query['hints'],
                 'show_copy' => $query['show_copy'],
                 'backtrace' => array_values($query['source']),
+                'row_count' => $query['row_count'] ?? null,
                 'duration' => $query['time'],
                 'duration_str' => ($query['type'] == 'transaction') ? '' : $this->formatDuration($query['time']),
                 'stmt_id' => $this->getDataFormatter()->formatSource(reset($query['source'])),
