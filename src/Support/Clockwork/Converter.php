@@ -90,6 +90,22 @@ class Converter
             }
         }
 
+        if (isset($data['exceptions'])) {
+            foreach ($data['exceptions']['exceptions'] as $exception) {
+                $output['log'][] = [
+                    'message' => $exception['message'],
+                    'time' => $exception['time'] ?? microtime(true),
+                    'level' => 'error',
+                    'exception' => array_merge($exception, [
+                        'stack_trace' => null,
+                        'stack_trace_html' => null,
+                        'surrounding_lines' => null,
+                        'trace' => [],
+                    ]),
+                ];
+            }
+        }
+
         if (isset($data['queries'])) {
             $queries = $data['queries'];
             foreach ($queries['statements'] as $statement) {
