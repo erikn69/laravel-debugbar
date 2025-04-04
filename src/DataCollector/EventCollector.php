@@ -29,9 +29,10 @@ class EventCollector extends TimeDataCollector
     public function onWildcardEvent($name = null, $data = [])
     {
         $currentTime = microtime(true);
+        $eventClass = explode(':', $name)[0];
 
         if (! $this->collectValues) {
-            $this->addMeasure($name, $currentTime, $currentTime, [], null, 'Events');
+            $this->addMeasure($name, $currentTime, $currentTime, [], null, $eventClass);
 
             return;
         }
@@ -72,7 +73,7 @@ class EventCollector extends TimeDataCollector
 
             $params['listeners.' . $i] = $listener;
         }
-        $this->addMeasure($name, $currentTime, $currentTime, $params, null, 'Events');
+        $this->addMeasure($name, $currentTime, $currentTime, $params, null, $eventClass);
     }
 
     public function subscribe(Dispatcher $events)
@@ -97,7 +98,11 @@ class EventCollector extends TimeDataCollector
     public function collect()
     {
         $data = parent::collect();
-        $data['nb_measures'] = $data['count'] = count($data['measures']);
+        $data['nb_measures'] = count($data['measures']);
+
+        if (! $data['nb_measures']) {
+            return [];
+        }
 
         return $data;
     }
