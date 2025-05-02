@@ -55,9 +55,6 @@ class CacheCollector extends TimeDataCollector
         $class = get_class($event);
         $params = get_object_vars($event);
         $label = $this->classMap[$class][0];
-        $endTime = microtime(true);
-        $startHashKey = $this->getEventHash($this->classMap[$class][1] ?? '', $params);
-        $startTime = $this->eventStarts[$startHashKey] ?? $endTime;
 
         if (isset($params['value'])) {
             $params['memoryUsage'] = strlen(serialize($params['value'])) * 8;
@@ -82,7 +79,10 @@ class CacheCollector extends TimeDataCollector
             ]);
         }
 
-        $this->addMeasure($label . "\t" . ($params['key'] ?? ''), $startTime, $endTime, $params);
+        $time = microtime(true);
+        $startHashKey = $this->getEventHash($this->classMap[$class][1] ?? '', $params);
+        $startTime = $this->eventStarts[$startHashKey] ?? $time;
+        $this->addMeasure($label . "\t" . ($params['key'] ?? ''), $startTime, $time, $params);
     }
 
     public function onStartCacheEvent($event)
