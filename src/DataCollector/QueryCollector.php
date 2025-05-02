@@ -213,7 +213,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
     {
         $time = microtime(true);
         $limited = $this->softLimit && $this->queryCount > $this->softLimit;
-        $connection = DB::connection($exception->getConnectionName());
+        $connection = DB::connection(method_exists($exception, 'getConnectionName') ? $exception->getConnectionName() : null);
 
         $source = [];
         if (!$limited && $this->findSource) {
