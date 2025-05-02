@@ -67,6 +67,8 @@ class CacheCollector extends TimeDataCollector implements AssetProvider, Resetta
 
             if (!$this->collectValues) {
                 unset($params['value']);
+            } elseif (is_string($params['value'])) {
+                $params['value'] = @unserialize($params['value']) ?: $params['value'];
             }
         }
 
