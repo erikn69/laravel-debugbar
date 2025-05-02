@@ -58,10 +58,10 @@ class CacheCollector extends TimeDataCollector
 
         if (isset($params['value'])) {
             $params['memoryUsage'] = strlen(serialize($params['value'])) * 8;
-            if (is_string($params['value'])) {
-                $params['value'] = @unserialize($params['value']) ?: $params['value'];
-            }
             if ($this->collectValues) {
+                if (is_string($params['value'])) {
+                    $params['value'] = @unserialize($params['value']) ?: $params['value'];
+                }
                 if ($this->isHtmlVarDumperUsed()) {
                     $params['value'] = $this->getVarDumper()->renderVar($params['value']);
                 } else {

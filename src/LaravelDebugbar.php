@@ -127,7 +127,7 @@ class LaravelDebugbar extends DebugBar
         if ($this->is_lumen) {
             $this->version = Str::betweenFirst($app->version(), '(', ')');
         } else {
-            $this->setRequestIdGenerator(new RequestIdGenerator());
+            $this->setRequestIdGenerator(new \DebugBar\RequestIdGenerator());
         }
     }
 
@@ -294,12 +294,7 @@ class LaravelDebugbar extends DebugBar
                 $collectData = $config->get('debugbar.options.views.data', true);
                 $excludePaths = $config->get('debugbar.options.views.exclude_paths', []);
                 $group = $config->get('debugbar.options.views.group', true);
-                if ($this->hasCollector('time') && $config->get('debugbar.options.views.timeline', false)) {
-                    $timeCollector = $this['time'];
-                } else {
-                    $timeCollector = null;
-                }
-                $this->addCollector(new ViewCollector($collectData, $excludePaths, $group, $timeCollector));
+                $this->addCollector(new ViewCollector($collectData, $excludePaths, $group));
                 $events->listen(
                     'composing:*',
                     function ($event, $params) {
