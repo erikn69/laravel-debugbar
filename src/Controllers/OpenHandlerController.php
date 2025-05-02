@@ -17,7 +17,8 @@ class OpenHandlerController
 {
     public function handle(OpenHandlerRequest $request, LaravelDebugbar $debugbar, OpenHandler $openHandler): Response|JsonResponse
     {
-        if ($request->validated('op') !== 'get' && !$debugbar->isStorageOpen($request)) {
+        $request->validated();
+        if ($request->input('op') !== 'get' && !$debugbar->isStorageOpen($request)) {
             return new JsonResponse([
                 [
                     'datetime' => date("Y-m-d H:i:s"),
