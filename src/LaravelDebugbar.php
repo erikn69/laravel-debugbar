@@ -144,6 +144,9 @@ class LaravelDebugbar extends DebugBar
     public function getRequestIdGenerator(): RequestIdGeneratorInterface
     {
         if ($this->requestIdGenerator === null) {
+            if (!method_exists(Str::class, 'ulid')) { // @phpstan-ignore function.alreadyNarrowedType
+                return parent::getRequestIdGenerator();
+            }
             $this->requestIdGenerator = new class implements RequestIdGeneratorInterface {
                 public function generate(): string
                 {
@@ -956,7 +959,7 @@ class LaravelDebugbar extends DebugBar
     protected function detectCspNonce(): ?string
     {
         // Vite nonce
-        if ($nonce = Vite::cspNonce()) {
+        if (class_exists(Vite::class) && $nonce = Vite::cspNonce()) {
             return $nonce;
         }
 
