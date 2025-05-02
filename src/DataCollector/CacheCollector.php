@@ -7,12 +7,16 @@ use DebugBar\DataFormatter\HasDataFormatter;
 use Illuminate\Cache\Events\{
     CacheFlushed,
     CacheFlushFailed,
+    CacheFlushing,
     CacheHit,
     CacheMissed,
+    ForgettingKey,
     KeyForgetFailed,
     KeyForgotten,
     KeyWriteFailed,
     KeyWritten,
+    RetrievingKey,
+    WritingKey,
 };
 use Illuminate\Events\Dispatcher;
 
@@ -24,15 +28,18 @@ class CacheCollector extends TimeDataCollector
     protected $collectValues;
 
     /** @var array */
+    protected $eventStarts = [];
+
+    /** @var array */
     protected $classMap = [
-        CacheHit::class => 'hit',
-        CacheMissed::class => 'missed',
-        CacheFlushed::class => 'flushed',
-        CacheFlushFailed::class => 'flush_failed',
-        KeyWritten::class => 'written',
-        KeyWriteFailed::class => 'write_failed',
-        KeyForgotten::class => 'forgotten',
-        KeyForgetFailed::class => 'forget_failed',
+        CacheHit::class => ['hit', RetrievingKey::class],
+        CacheMissed::class => ['missed', RetrievingKey::class],
+        CacheFlushed::class => ['flushed', CacheFlushing::class],
+        CacheFlushFailed::class => ['flush_failed', CacheFlushing::class],
+        KeyWritten::class => ['written', WritingKey::class],
+        KeyWriteFailed::class => ['write_failed', WritingKey::class],
+        KeyForgotten::class => ['forgotten', ForgettingKey::class],
+        KeyForgetFailed::class => ['forget_failed', ForgettingKey::class],
     ];
 
     public function __construct($requestStartTime, $collectValues)
@@ -40,16 +47,23 @@ class CacheCollector extends TimeDataCollector
         parent::__construct();
 
         $this->collectValues = $collectValues;
+        $this->memoryMeasure = true;
     }
 
     public function onCacheEvent($event)
     {
         $class = get_class($event);
         $params = get_object_vars($event);
-
-        $label = $this->classMap[$class];
+        $label = $this->classMap[$class][0];
+        $endTime = microtime(true);
+        $startHashKey = $this->getEventHash($this->classMap[$class][1] ?? '', $params);
+        $startTime = $this->eventStarts[$startHashKey] ?? $endTime;
 
         if (isset($params['value'])) {
+            $params['memoryUsage'] = strlen(serialize($params['value'])) * 8;
+            if (is_string($params['value'])) {
+                $params['value'] = @unserialize($params['value']) ?: $params['value'];
+            }
             if ($this->collectValues) {
                 if ($this->isHtmlVarDumperUsed()) {
                     $params['value'] = $this->getVarDumper()->renderVar($params['value']);
@@ -61,7 +75,6 @@ class CacheCollector extends TimeDataCollector
             }
         }
 
-
         if (!empty($params['key'] ?? null) && in_array($label, ['hit', 'written'])) {
             $params['delete'] = route('debugbar.cache.delete', [
                 'key' => urlencode($params['key']),
@@ -69,14 +82,35 @@ class CacheCollector extends TimeDataCollector
             ]);
         }
 
-        $time = microtime(true);
-        $this->addMeasure($label . "\t" . ($params['key'] ?? ''), $time, $time, $params);
+        $this->addMeasure($label . "\t" . ($params['key'] ?? ''), $startTime, $endTime, $params);
+    }
+
+    public function onStartCacheEvent($event)
+    {
+        $startHashKey = $this->getEventHash(get_class($event), get_object_vars($event));
+        $this->eventStarts[$startHashKey] = microtime(true);
+    }
+
+    private function getEventHash(string $class, array $params): string
+    {
+        unset($params['value']);
+
+        return $class . ':' . substr(hash('sha256', json_encode($params)), 0, 12);
     }
 
     public function subscribe(Dispatcher $dispatcher)
     {
         foreach (array_keys($this->classMap) as $eventClass) {
             $dispatcher->listen($eventClass, [$this, 'onCacheEvent']);
+        }
+
+        $startEvents = array_unique(array_filter(array_map(
+            fn ($values) => $values[1] ?? null,
+            array_values($this->classMap)
+        )));
+
+        foreach ($startEvents as $eventClass) {
+            $dispatcher->listen($eventClass, [$this, 'onStartCacheEvent']);
         }
     }
 
