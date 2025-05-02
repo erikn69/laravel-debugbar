@@ -100,6 +100,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         }
 
         // Exclude debugbar cookies from encryption
+        if ($debugbar->checkVersion('11.0'))
         EncryptCookies::except($debugbar->getStackDataSessionNamespace());
 
         // Attach listeners when debugbar should be enabled

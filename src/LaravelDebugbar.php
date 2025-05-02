@@ -138,6 +138,9 @@ class LaravelDebugbar extends DebugBar
     public function getRequestIdGenerator(): RequestIdGeneratorInterface
     {
         if ($this->requestIdGenerator === null) {
+            if (!method_exists(Str::class, 'ulid')) {
+                return parent::getRequestIdGenerator();
+            }
             $this->requestIdGenerator = new class implements RequestIdGeneratorInterface {
                 public function generate(): string
                 {
