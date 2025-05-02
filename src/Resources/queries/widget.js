@@ -252,6 +252,25 @@
                             }
                         }).prependTo($li);
                 }
+
+                if (window.sqlFormatter) {
+                    $('<span title="Format Query" />').on('click', function () {
+                        event.stopPropagation();
+                        let popup = window.open('about:blank', 'SQL Pretty-Print', 'width=700,height=440,scrollbars=yes'),
+                            documentToWriteTo = popup.document,
+                            cssLink = document.querySelector('link[href*="debugbar/assets/stylesheets"]')
+                            body = $('<div class="phpdebugbar" />').append(
+                                $('<pre style="border: 1px solid #ddd; padding: 5px;" />').append(
+                                    $('<code class="phpdebugbar-widgets-sql" />')
+                                        .html(PhpDebugBar.Widgets.highlight(sqlFormatter.format(statement.sql), 'sql'))
+                                ));
+
+                        let css = '<style>body{margin:0;padding:0;}div.phpdebugbar{position:relative;padding:10px;width:auto;}</style>';
+                        documentToWriteTo.open();
+                        documentToWriteTo.write((cssLink ? $(cssLink).prop('outerHTML') : '') + css + body.prop('outerHTML'));
+                        documentToWriteTo.close();
+                    }).addClass(csscls('code-format')).prependTo($li);
+                }
             }
 
             if (statement.width_percent) {
