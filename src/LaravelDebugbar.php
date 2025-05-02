@@ -20,8 +20,9 @@ use Barryvdh\Debugbar\DataFormatter\QueryFormatter;
 use Barryvdh\Debugbar\Storage\SocketStorage;
 use Barryvdh\Debugbar\Storage\FilesystemStorage;
 use Barryvdh\Debugbar\Support\Clockwork\ClockworkCollector;
-use Barryvdh\Debugbar\Support\RequestIdGenerator;
 use DebugBar\Bridge\MonologCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use DebugBar\Bridge\Symfony\SymfonyMailCollector;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\DataCollectorInterface;
@@ -500,17 +501,27 @@ class LaravelDebugbar extends DebugBar
 
         if ($this->shouldCollect('mail', true) && class_exists('Illuminate\Mail\MailServiceProvider') && $events) {
             try {
-                $mailCollector = new SymfonyMailCollector();
+                if ($this->checkVersion('9.0')) {
+                    $mailCollector = new SymfonyMailCollector();
+                    $events->listen(function (MessageSent $event) use ($mailCollector) {
+                        $mailCollector->addSymfonyMessage($event->sent->getSymfonySentMessage());
+                    });
+                } else {
+                    $mailer = $app['mailer']->getSwiftMailer();
+                    $mailCollector = new SwiftMailCollector($mailer);
+
+                    if ($config->get('debugbar.options.mail.show_body') && $this->hasCollector('messages')) {
+                        $this['messages']->aggregate(new SwiftLogCollector($mailer));
+                    }
+                }
+
                 $this->addCollector($mailCollector);
-                $events->listen(function (MessageSent $event) use ($mailCollector) {
-                    $mailCollector->addSymfonyMessage($event->sent->getSymfonySentMessage());
-                });
 
                 if ($config->get('debugbar.options.mail.show_body') || $config->get('debugbar.options.mail.full_log')) {
                     $mailCollector->showMessageBody();
                 }
 
-                if ($this->hasCollector('time') && $config->get('debugbar.options.mail.timeline')) {
+                if ($this->hasCollector('time') && $config->get('debugbar.options.mail.timeline') && $this->checkVersion('9.0')) {
                     $transport = $app['mailer']->getSymfonyTransport();
                     $app['mailer']->setSymfonyTransport(new class ($transport, $this) extends AbstractTransport{
                         private $originalTransport;
@@ -541,7 +552,9 @@ class LaravelDebugbar extends DebugBar
                     });
                 }
             } catch (Exception $e) {
-                $this->addCollectorException('Cannot add SymfonyMailCollector', $e);
+                $this->addCollectorException(
+                    'Cannot add '.($this->checkVersion('9.0')?'SymfonyMailCollector':'SwiftMailCollector'), $e
+                );
             }
         }
 
@@ -552,9 +565,6 @@ class LaravelDebugbar extends DebugBar
             } catch (Exception $e) {
                 $this->addCollectorException('Cannot add LogsCollector', $e);
             }
-        }
-        if ($this->shouldCollect('files', false)) {
-            $this->addCollector(new FilesCollector($app));
         }
 
         if ($this->shouldCollect('auth', false)) {
