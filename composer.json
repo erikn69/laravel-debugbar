@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "php-debugbar/php-debugbar": "^2.2",
+        "php-debugbar/php-debugbar": "^2.2.3",
         "illuminate/routing": "^8.67|^9|^10|^11|^12",
         "illuminate/session": "^8.67|^9|^10|^11|^12",
         "illuminate/support": "^8.67|^9|^10|^11|^12",

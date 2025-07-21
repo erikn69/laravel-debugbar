@@ -60,6 +60,16 @@ class QueryCollector extends PDOCollector
     }
 
     /**
+     * Highlights queries that exceed the threshold
+     *
+     * @param  int|float $threshold miliseconds value
+     */
+    public function setSlowThreshold($threshold)
+    {
+        $this->slowThreshold = $threshold / 1000;
+    }
+
+    /**
      * Renders the SQL of traced statements with params embedded
      *
      * @param boolean $enabled
@@ -517,6 +527,7 @@ class QueryCollector extends PDOCollector
                 'start' => $query['start'] ?? null,
                 'duration' => $query['time'],
                 'duration_str' => ($query['type'] == 'transaction') ? '' : $this->formatDuration($query['time']),
+                'slow' => $this->slowThreshold && $this->slowThreshold <= $query['time'],
                 'memory' => $query['memory'],
                 'memory_str' => $query['memory'] ? $this->getDataFormatter()->formatBytes($query['memory']) : null,
                 'filename' => $this->getDataFormatter()->formatSource($source, true),

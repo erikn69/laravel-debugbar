@@ -359,6 +359,13 @@ class LaravelDebugbar extends DebugBar
             $queryCollector->setLimits($config->get('debugbar.options.db.soft_limit'), $config->get('debugbar.options.db.hard_limit'));
             $queryCollector->setDurationBackground($config->get('debugbar.options.db.duration_background'));
 
+            //allow collecting only queries slower than a specified amount of milliseconds (`slow_threshold`)
+            $onlyThreshold = $config->get('debugbar.options.db.only_slow_queries', true);
+            $threshold = $config->get('debugbar.options.db.slow_threshold', false);
+            if (!$onlyThreshold && $threshold) {
+                $queryCollector->setSlowThreshold($threshold);
+            }
+
             if ($config->get('debugbar.options.db.with_params')) {
                 $queryCollector->setRenderSqlWithParams(true);
             }
@@ -393,14 +400,12 @@ class LaravelDebugbar extends DebugBar
 
             try {
                 $events->listen(
-                    function (\Illuminate\Database\Events\QueryExecuted $query) {
+                    function (\Illuminate\Database\Events\QueryExecuted $query) use ($threshold, $onlyThreshold) {
                         if (!app(static::class)->shouldCollect('db', true)) {
                             return; // Issue 776 : We've turned off collecting after the listener was attached
                         }
 
-                        //allow collecting only queries slower than a specified amount of milliseconds
-                        $threshold = app('config')->get('debugbar.options.db.slow_threshold', false);
-                        if (!$threshold || $query->time > $threshold) {
+                        if (!$onlyThreshold || ($threshold && $query->time > $threshold)) {
                             $this['queries']->addQuery($query);
                         }
                     }
