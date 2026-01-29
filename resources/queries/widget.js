@@ -116,6 +116,7 @@
             // Add explain button if available
             if (stmt.explain) {
                 let table = li.querySelector(`.${csscls('params')}`);
+                table.style.display = '';
 
                 if (table && ['mariadb', 'mysql'].includes(stmt.explain.driver)) {
                     this.renderDetailExplain(table, 'Performance', stmt, this.explainMysql.bind(this));
