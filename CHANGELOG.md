@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.0.4 - 2026-01-29
+
+### What's Changed
+
+* Bump workflows actions by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1946
+* Allow ability parameter to accept integer type by @jeffersongoncalves in https://github.com/fruitcake/laravel-debugbar/pull/1947
+
+### New Contributors
+
+* @jeffersongoncalves made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/1947
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.0.3...v4.0.4
+
 ## v4.0.3 - 2026-01-26
 
 ### What's Changed
