@@ -159,7 +159,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
         }
 
         $bindings = match (true) {
-            $limited && filled($query->bindings) => [],
+            $limited && filled($query->bindings) => null,
             default => $query->connection->prepareBindings($query->bindings),
         };
 
