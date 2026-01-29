@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.0.5 - 2026-01-29
+
+### What's Changed
+
+* Show params table for explain button by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1949
+* Change bindings return value on limited by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1948
+* use GateEvaluated event by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1951
+* Fix livewire deprecations errors by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1952
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.0.4...v4.0.5
+
 ## v4.0.4 - 2026-01-29
 
 ### What's Changed
