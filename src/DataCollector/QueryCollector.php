@@ -543,7 +543,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
                 // ignore error for non-pdo laravel drivers
             }
 
-            $sql = $this->getQueryFormatter()->formatSqlWithBindings($sql, $query['bindings'], $pdo);
+            $sql = $this->getQueryFormatter()->formatSqlWithBindings($sql, $query['bindings'] ?? null, $pdo);
         }
 
         return $this->getQueryFormatter()->formatSql($sql);
