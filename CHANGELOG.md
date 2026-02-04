@@ -1,5 +1,20 @@
 # Changelog
 
+## v4.0.6 - 2026-02-04
+
+### What's Changed
+
+* Use Dispatcher contract by @bytestream in https://github.com/fruitcake/laravel-debugbar/pull/1954
+* fix: urlencode cache key by @calebdw in https://github.com/fruitcake/laravel-debugbar/pull/1955
+* Handle missing bindings in SQL formatting by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1956
+
+### New Contributors
+
+* @bytestream made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/1954
+* @calebdw made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/1955
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.0.5...v4.0.6
+
 ## v4.0.5 - 2026-01-29
 
 ### What's Changed
