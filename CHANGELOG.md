@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.0.7 - 2026-02-06
+
+### What's Changed
+
+* chore: replace deprecated Request::get() with Request::input() by @calebdw in https://github.com/fruitcake/laravel-debugbar/pull/1957
+* Fix utf-8 encoding by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1959
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.0.6...v4.0.7
+
 ## v4.0.6 - 2026-02-04
 
 ### What's Changed
