@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.0.8 - 2026-02-14
+
+### What's Changed
+
+* Use message id instead of subject for mail collector by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1965
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.0.7...v4.0.8
+
 ## v4.0.7 - 2026-02-06
 
 ### What's Changed
