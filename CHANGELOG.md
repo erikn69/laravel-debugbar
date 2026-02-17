@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.0.9 - 2026-02-17
+
+### What's Changed
+
+* Check mail is started by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1967
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.0.8...v4.0.9
+
 ## v4.0.8 - 2026-02-14
 
 ### What's Changed
