@@ -10,7 +10,6 @@ use Fruitcake\LaravelDebugbar\Console\ClearCommand;
 use Fruitcake\LaravelDebugbar\Support\Octane\ResetDebugbar;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Events\Terminating;
@@ -49,10 +48,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             function (Factory $factory, Container $application): Factory {
                 $laravelDebugbar = $application->make(LaravelDebugbar::class);
 
-                $shouldTrackViewTime = $laravelDebugbar->isEnabled() &&
-                    $laravelDebugbar->shouldCollect('time', true) &&
-                    $laravelDebugbar->shouldCollect('views', true) &&
-                    $application['config']->get('debugbar.options.views.timeline', false);
+                $shouldTrackViewTime = $laravelDebugbar->isEnabled()
+                    && $laravelDebugbar->shouldCollect('time', true)
+                    && $laravelDebugbar->shouldCollect('views', true)
+                    && $application['config']->get('debugbar.options.views.timeline', false);
 
                 if (! $shouldTrackViewTime) {
                     /* Do not swap the engine to save performance */
@@ -139,8 +138,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         }
 
         // Exclude debugbar cookies from encryption
-        if ($debugbar->checkVersion('11.0'))
-        EncryptCookies::except($debugbar->getStackDataSessionNamespace());
+        if ($debugbar->checkVersion('11.0')) {
+            EncryptCookies::except($debugbar->getStackDataSessionNamespace());
+        }
 
         // Attach listeners when debugbar should be enabled
         if ($debugbar->isEnabled() && !$debugbar->requestIsExcluded($this->app['request'])) {

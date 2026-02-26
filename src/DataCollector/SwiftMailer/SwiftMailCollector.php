@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /*
  * This file is part of the DebugBar package.
  *
@@ -44,18 +46,18 @@ class SwiftMailCollector extends DataCollector implements Renderable, AssetProvi
         $mails = [];
         foreach ($this->messagesLogger->getMessages() as $msg) {
             $html = $this->showBody ? $msg->getBody() : null;
-            $mails[] = array(
+            $mails[] = [
                 'to' => $this->formatTo($msg->getTo()),
                 'subject' => $msg->getSubject(),
                 'headers' => $msg->getHeaders()->toString(),
                 'body' => $html,
                 'html' => $html,
-            );
+            ];
         }
-        return array(
+        return [
             'count' => count($mails),
-            'mails' => $mails
-        );
+            'mails' => $mails,
+        ];
     }
 
     protected function formatTo($to)
@@ -84,12 +86,12 @@ class SwiftMailCollector extends DataCollector implements Renderable, AssetProvi
                 'widget' => 'PhpDebugBar.Widgets.MailsWidget',
                 'map' => 'swiftmailer_mails.mails',
                 'default' => '[]',
-                'title' => 'Mails'
+                'title' => 'Mails',
             ],
             'emails:badge' => [
                 'map' => 'swiftmailer_mails.count',
-                'default' => 'null'
-            ]
+                'default' => 'null',
+            ],
         ];
     }
 
@@ -97,7 +99,7 @@ class SwiftMailCollector extends DataCollector implements Renderable, AssetProvi
     {
         return [
             'css' => 'widgets/mails/widget.css',
-            'js' => 'widgets/mails/widget.js'
+            'js' => 'widgets/mails/widget.js',
         ];
     }
 }
