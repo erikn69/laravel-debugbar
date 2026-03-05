@@ -18,7 +18,7 @@ class LaravelCollector extends DataCollector implements Renderable
         $app = app();
         return [
             "version" => Str::of($app->version())->explode('.')->first() . '.x',
-            'tooltip' => [
+            'tooltip' => array_filter([
                 'Laravel Version' => $app->version(),
                 'PHP Version' => phpversion(),
                 'Environment' => $app->environment(),
@@ -26,7 +26,12 @@ class LaravelCollector extends DataCollector implements Renderable
                 'URL' => Str::of(config('app.url'))->replace(['http://', 'https://'], ''),
                 'Timezone' => config('app.timezone'),
                 'Locale' => config('app.locale'),
-            ],
+                'Cached' => implode(', ', array_filter([
+                    $app->configurationIsCached() ? 'Configs' : null,
+                    $app->routesAreCached() ? 'Routes' : null,
+                    $app->eventsAreCached() ? 'Events' : null,
+                ])),
+            ]),
         ];
     }
 
