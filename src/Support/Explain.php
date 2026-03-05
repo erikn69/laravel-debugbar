@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fruitcake\LaravelDebugbar\Support;
 
+use DebugBar\DataCollector\DataCollector;
 use Exception;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\QueryException;
@@ -60,6 +61,19 @@ class Explain
         if (!hash_equals($this->hash($connection, $sql, $bindings), $hash)) {
             throw new Exception('Query to execute could not be verified.');
         }
+    }
+
+    public function generateSelectResult(string $connection, string $sql, array $bindings, string $hash, ?string $format): array
+    {
+        $this->verify($connection, $sql, $bindings, $hash);
+
+        $result = DB::connection($connection)->select($sql, $bindings);
+
+        if ($format === 'dump') {
+            $result = DataCollector::getDefaultDataFormatter()->formatVar($result);
+        }
+
+        return ['result' => $result];
     }
 
     public function generateRawExplain(string $connection, string $sql, array $bindings, string $hash): array
