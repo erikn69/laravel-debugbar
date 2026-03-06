@@ -13,7 +13,6 @@ use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Database\Events\TransactionRolledBack;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
-use Symfony\Component\HttpFoundation\IpUtils;
 
 class DatabaseCollectorProvider extends AbstractCollectorProvider
 {
@@ -49,7 +48,7 @@ class DatabaseCollectorProvider extends AbstractCollectorProvider
             $queryCollector->mergeBacktraceExcludePaths($excludeBacktracePaths);
         }
 
-        if (($options['explain']['enabled'] ?? false) && IpUtils::isPrivateIp($request->getClientIp())) {
+        if (($options['explain']['enabled'] ?? false) && $this->debugbar->isStorageOpen($request)) {
             $queryCollector->setExplainSource(true);
         }
 
