@@ -4,46 +4,47 @@ declare(strict_types=1);
 
 namespace Fruitcake\LaravelDebugbar\Controllers;
 
+use Fruitcake\LaravelDebugbar\LaravelDebugbar;
+use Fruitcake\LaravelDebugbar\Requests\QueriesExplainRequest;
 use Fruitcake\LaravelDebugbar\Support\Explain;
 use Exception;
-use Illuminate\Http\Request;
 
-class QueriesController extends BaseController
+class QueriesController
 {
     /**
      * Generate explain data for query.
      */
-    public function explain(Request $request): \Illuminate\Http\JsonResponse
+    public function explain(QueriesExplainRequest $request, LaravelDebugbar $debugbar, Explain $explain): \Illuminate\Http\JsonResponse
     {
-        if (!config('debugbar.options.db.explain.enabled', false) || !$this->debugbar->isStorageOpen($request)) {
+        if (!config('debugbar.options.db.explain.enabled', false) || !$debugbar->isStorageOpen($request)) {
             return response()->json([
                 'success' => false,
                 'message' => 'EXPLAIN is currently disabled in the Debugbar.',
             ], 400);
         }
 
-        try {
-            $explain = new Explain();
+        $validated = $request->validated();
 
-            if ($request->json('mode') === 'visual') {
+        try {
+            if (($validated['mode'] ?? null) === 'visual') {
                 return response()->json([
                     'success' => true,
-                    'data' => $explain->generateVisualExplain($request->json('connection'), $request->json('query'), $request->json('bindings'), $request->json('hash')),
+                    'data' => $explain->generateVisualExplain($validated['connection'], $validated['query'], $validated['bindings'] ?? null, $validated['hash']),
                 ]);
             }
 
-            if ($request->json('mode') === 'result') {
+            if (($validated['mode'] ?? null) === 'result') {
                 return response()->json([
                     'success' => true,
-                    'data' => $explain->generateSelectResult($request->json('connection'), $request->json('query'), $request->json('bindings'), $request->json('hash'), $request->json('format')),
+                    'data' => $explain->generateSelectResult($validated['connection'], $validated['query'], $validated['bindings'] ?? null, $validated['hash'], $validated['format'] ?? null),
                 ]);
             }
 
             return response()->json([
                 'success' => true,
-                'data' => $explain->generateRawExplain($request->json('connection'), $request->json('query'), $request->json('bindings'), $request->json('hash')),
-                'visual' => $explain->isVisualExplainSupported($request->json('connection')) ? [
-                    'confirm' => $explain->confirmVisualExplain($request->json('connection')),
+                'data' => $explain->generateRawExplain($validated['connection'], $validated['query'], $validated['bindings'] ?? null, $validated['hash']),
+                'visual' => $explain->isVisualExplainSupported($validated['connection']) ? [
+                    'confirm' => $explain->confirmVisualExplain($validated['connection']),
                 ] : null,
             ]);
         } catch (Exception $e) {
