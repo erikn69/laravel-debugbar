@@ -1,5 +1,43 @@
 # Changelog
 
+## v4.1.0 - 2026-03-07
+
+### Biggest changes
+
+- Use JsonVardumper for smaller + more detailed depths
+- Add option to re-query and show results for SELECT queries
+- Popup query/explain results
+- Stricter checks for production env / non-debug mode, early exit
+
+### What's Changed
+
+* Fix CSS typo: `border-botton` → `border-bottom` by @Copilot in https://github.com/fruitcake/laravel-debugbar/pull/1975
+* Bump minimatch by @dependabot[bot] in https://github.com/fruitcake/laravel-debugbar/pull/1973
+* Cast database name to string in QueryCollector for null values by @b8ne in https://github.com/fruitcake/laravel-debugbar/pull/1979
+* Check privateIp instead of localhost range by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1977
+* Fix typo on comment by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1978
+* Add button to show query results by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1976
+* Check for json formatter by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1980
+* Add masked keys to ConfigCollector by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1981
+* Include cached items info on laravel tooltip by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1982
+* Only allow explain etc on local ip by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1983
+* use json formatter by default by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1984
+* Tweak open storage / query explain checks by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1985
+* Easy collector getter from `debugbar()` helper by @ssw1cblarrion in https://github.com/fruitcake/laravel-debugbar/pull/1989
+* [QueryCollector] Support file info on addMessage method by @ssw1cblarrion in https://github.com/fruitcake/laravel-debugbar/pull/1988
+* Use highlight on popup title for query result/explain by @parallels999 in https://github.com/fruitcake/laravel-debugbar/pull/1986
+* Quick fixes by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1990
+* Tweak boot check by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1991
+* Tweak controllers by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1992
+
+### New Contributors
+
+* @Copilot made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/1975
+* @b8ne made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/1979
+* @ssw1cblarrion made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/1989
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.0.10...v4.1.0
+
 ## v4.0.10 - 2026-02-26
 
 ### What's Changed
