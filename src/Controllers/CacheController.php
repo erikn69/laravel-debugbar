@@ -15,7 +15,7 @@ class CacheController extends BaseController
      */
     public function delete(CacheManager $cache, Request $request, string $key): \Illuminate\Http\JsonResponse
     {
-        if (! $request->hasValidSignature()) {
+        if (! $request->hasValidSignature() || ! $this->debugbar->isStorageOpen($request)) {
             abort(401);
         }
 
