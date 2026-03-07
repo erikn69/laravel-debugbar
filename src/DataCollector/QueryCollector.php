@@ -352,7 +352,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
             'sql' => $message,
             'type' => 'message',
             'start' => microtime(true),
-            ...(count($source) ? ['xdebug_link'=>$source[0]] : []),
+            ...(count($source) ? ['xdebug_link' => $source[0]] : []),
         ];
     }
 
