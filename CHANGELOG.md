@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.1.1 - 2026-03-08
+
+### What's Changed
+
+* Catch serialization errors when populating cache stats by @miken32 in https://github.com/fruitcake/laravel-debugbar/pull/1993
+* Fix booting on console by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1995
+* Add some tests for closures in cache by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1994
+
+### New Contributors
+
+* @miken32 made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/1993
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.1.0...v4.1.1
+
 ## v4.1.0 - 2026-03-07
 
 ### Biggest changes
