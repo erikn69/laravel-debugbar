@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.1.2 - 2026-03-09
+
+### What's Changed
+
+* Fix sqlite and tweak results by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/1996
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.1.1...v4.1.2
+
 ## v4.1.1 - 2026-03-08
 
 ### What's Changed
