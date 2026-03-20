@@ -65,14 +65,12 @@ class Converter
         if (isset($data['route'])) {
             $route = $data['route'];
 
-            $controller = null;
-            if (isset($route['controller'])) {
-                $controller = $route['controller'];
+            $output['controller'] = null;
+            if (isset($route['controller']['value'])) {
+                $output['controller'] = $route['controller']['value'];
             } elseif (isset($route['uses'])) {
-                $controller = $route['uses'];
+                $output['controller'] = $route['uses'];
             }
-
-            $output['controller'] = preg_replace('/<a\b[^>]*>(.*?)<\/a>/i', '', (string) $controller) ?: null;
 
             [$method, $uri] = explode(' ', $route['uri'], 2);
 
@@ -104,10 +102,10 @@ class Converter
                 }
                 $output['databaseQueries'][] = [
                     'query' => $statement['sql'],
-                    'bindings' => $statement['params'],
-                    'duration' => $statement['duration'] * 1000,
+                    'bindings' => $statement['params'] ?? [],
+                    'duration' => ($statement['duration'] ?? 0) * 1000,
                     'time' => $statement['start'] ?? null,
-                    'connection' => $statement['connection'],
+                    'connection' => $statement['connection'] ?? null,
                 ];
             }
 
