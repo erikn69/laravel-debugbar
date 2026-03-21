@@ -96,6 +96,26 @@ class Converter
             }
         }
 
+        if (isset($data['exceptions']['exceptions'])) {
+            foreach ($data['exceptions']['exceptions'] as $message) {
+                $output['log'][] = [
+                    'message' => $message['message'] . "\n" . ($message['stack_trace'] ?? ''),
+                    'time' => $message['time'] ?? null,
+                    'level' => str_starts_with($message['type'], 'E_') || $message['type'] === 'UNKNOWN' ? 'warning' : 'error',
+                ];
+            }
+        }
+
+        if (isset($data['logs']['messages'])) {
+            foreach ($data['logs']['messages'] as $message) {
+                $output['log'][] = [
+                    'message' => $message['message'],
+                    'time' => strtotime($message['time']),
+                    'level' => $message['label'],
+                ];
+            }
+        }
+
         if (isset($data['queries']['statements'])) {
             $queries = $data['queries'];
             foreach ($queries['statements'] as $statement) {
