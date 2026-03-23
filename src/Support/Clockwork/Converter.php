@@ -126,8 +126,7 @@ class Converter
                     'duration' => ($statement['duration'] ?? 0) * 1000,
                     'time' => $statement['start'] ?? null,
                     'connection' => $statement['connection'] ?? null,
-                    'model' => $statement['filename']
-                        ?? (($statement['xdebug_link'] ?? null) ? $statement['xdebug_link']['filename'] . ':' . $statement['xdebug_link']['line'] : null),
+                    'model' => $statement['filename'] ?? null,
                 ];
             }
 
