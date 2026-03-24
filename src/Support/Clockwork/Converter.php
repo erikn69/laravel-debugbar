@@ -126,6 +126,7 @@ class Converter
                     'duration' => ($statement['duration'] ?? 0) * 1000,
                     'time' => $statement['start'] ?? null,
                     'connection' => $statement['connection'] ?? null,
+                    'model' => $statement['filename'] ?? null,
                 ];
             }
 
