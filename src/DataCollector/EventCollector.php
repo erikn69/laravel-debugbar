@@ -73,7 +73,7 @@ class EventCollector extends TimeDataCollector
     public function getWidgets(): array
     {
         return [
-            "event" => [
+            "events" => [
                 "icon" => "subtask",
                 "widget" => "PhpDebugBar.Widgets.TimelineWidget",
                 "map" => "event",
