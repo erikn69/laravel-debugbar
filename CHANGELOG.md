@@ -1,5 +1,30 @@
 # Changelog
 
+## v4.2.0 - 2026-03-29
+
+### Laravel Boost Skils
+
+This releases adds a skill for Laravel Boost. You can install it by re-running boost:install. This allows your agent to drill down on data from previous requests.
+
+### What's Changed
+
+* Fix octane docs by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2000
+* fix: InertiaCollector duplicate page on XHR. by @Karagiannidis in https://github.com/fruitcake/laravel-debugbar/pull/2003
+* Bump flatted from 3.3.3 to 3.4.2 by @dependabot[bot] in https://github.com/fruitcake/laravel-debugbar/pull/2004
+* Add exception and logs handling in Clockwork by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2002
+* Fix clockwork support by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2001
+* Add model filename to query statement output by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2006
+* Bump picomatch from 4.0.3 to 4.0.4 by @dependabot[bot] in https://github.com/fruitcake/laravel-debugbar/pull/2007
+* Custom type on QueryCollector messages by @ssw1cblarrion in https://github.com/fruitcake/laravel-debugbar/pull/2009
+* Add find/get storage commands + Boost skill by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2010
+* Add query cli command + skill by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2011
+
+### New Contributors
+
+* @Karagiannidis made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/2003
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.1.3...v4.2.0
+
 ## v4.1.3 - 2026-03-09
 
 ### What's Changed
