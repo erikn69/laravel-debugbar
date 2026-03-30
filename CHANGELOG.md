@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.2.1 - 2026-03-30
+
+### What's Changed
+
+* Filter on issues + better summaries by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2012
+* Add CLI tests by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2013
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.0...v4.2.1
+
 ## v4.2.0 - 2026-03-29
 
 ### Laravel Boost Skils
