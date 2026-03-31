@@ -202,20 +202,48 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
 
     public function addFailedQuery(QueryException $exception): void
     {
+        $time = microtime(true);
+        $limited = $this->softLimit && $this->queryCount > $this->softLimit;
         $connection = DB::connection($exception->getConnectionName());
-        $this->addQuery(new QueryExecuted($exception->getSql(), $exception->getBindings(), 0, $connection));
-        $this->queries[count($this->queries) - 1] += [
+
+        $source = [];
+        if (!$limited && $this->findSource) {
+            try {
+                $source = $this->findSource($exception->getTrace());
+            } catch (\Exception $e) {
+            }
+        }
+
+        $bindings = match (true) {
+            $limited && filled($exception->getBindings()) => null,
+            default => $connection->prepareBindings($exception->getBindings()),
+        };
+
+        $this->queries[] = [
             'error_code' => $exception->getCode(),
             'error_message' => Str::limit($exception->getMessage(), 300),
+            'query' => $exception->getSql(),
+            'type' => 'query',
+            'bindings' => $bindings,
+            'start' => $time,
+            'time' => 0,
+            'memory' => 0,
+            'source' => $source,
+            'connection' => $connection,
+            'driver' => $connection->getConfig('driver'),
         ];
+
+        if ($this->hasTimeDataCollector()) {
+            $this->addTimeMeasure(Str::limit($exception->getSql(), 100), $time, $time, [], 'Database Query');
+        }
     }
 
     /**
      * Use a backtrace to search for the origins of the query.
      */
-    protected function findSource(): array
+    protected function findSource(?array $stack = null): array
     {
-        $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT, app('config')->get('debugbar.debug_backtrace_limit', 50));
+        $stack = $stack ?? debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT, app('config')->get('debugbar.debug_backtrace_limit', 50));
 
         $sources = [];
 
