@@ -85,7 +85,7 @@ class DatabaseCollectorProvider extends AbstractCollectorProvider
             $handler = app()->make(ExceptionHandler::class);
 
             if (method_exists($handler, 'reportable')) {
-                $handler->reportable(function (QueryException $exception) use ($queryCollector) {
+                $handler->reportable(function (QueryException $exception) use ($queryCollector): void {
                     $queryCollector->addFailedQuery($exception);
                 });
             }

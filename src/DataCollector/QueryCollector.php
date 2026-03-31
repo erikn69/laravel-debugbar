@@ -243,7 +243,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
      */
     protected function findSource(?array $stack = null): array
     {
-        $stack = $stack ?? debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT, app('config')->get('debugbar.debug_backtrace_limit', 50));
+        $stack ??= debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT, app('config')->get('debugbar.debug_backtrace_limit', 50));
 
         $sources = [];
 
