@@ -12,7 +12,9 @@ use DebugBar\DataCollector\HasTimeDataCollector;
 use DebugBar\DataCollector\Renderable;
 use DebugBar\DataFormatter\QueryFormatter;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Query\Grammars\Grammar;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -196,6 +198,16 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
         if ($this->hasTimeDataCollector()) {
             $this->addTimeMeasure(Str::limit($sql, 100), $startTime, $endTime, [], 'Database Query');
         }
+    }
+
+    public function addFailedQuery(QueryException $exception): void
+    {
+        $connection = DB::connection($exception->getConnectionName());
+        $this->addQuery(new QueryExecuted($exception->getSql(), $exception->getBindings(), 0, $connection));
+        $this->queries[count($this->queries) - 1] += [
+            'error_code' => $exception->getCode(),
+            'error_message' => Str::limit($exception->getMessage(), 300),
+        ];
     }
 
     /**
@@ -460,7 +472,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
                 $explainModes[] = 'explain';
             }
 
-            $statements[] = [
+            $statements[] = array_filter([
                 'sql' => $this->getSqlQueryToDisplay($query),
                 'type' => $query['type'],
                 'params' => $query['bindings'] ?? [],
@@ -483,7 +495,10 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
                     'modes' => $explainModes,
                     'hash' => $explain->hash($query['connection']->getName(), $query['query'], $query['bindings']),
                 ] : null,
-            ];
+                'is_success' => ($query['error_message'] ?? false) ? false : null,
+                'error_code' => $query['error_code'] ?? null,
+                'error_message' => $query['error_message'] ?? null,
+            ], fn($val) => !is_null($val));
         }
 
         if ($this->durationBackground) {
