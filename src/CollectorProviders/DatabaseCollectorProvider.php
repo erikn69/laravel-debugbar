@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Fruitcake\LaravelDebugbar\CollectorProviders;
 
 use Fruitcake\LaravelDebugbar\DataCollector\QueryCollector;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Events\ConnectionEstablished;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Database\Events\TransactionRolledBack;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 
@@ -77,6 +79,18 @@ class DatabaseCollectorProvider extends AbstractCollectorProvider
             );
         } catch (\Throwable $e) {
             $this->addCollectorException('Cannot listen to Queries', $e);
+        }
+
+        try {
+            $handler = app()->make(ExceptionHandler::class);
+
+            if (method_exists($handler, 'reportable')) {
+                $handler->reportable(function (QueryException $exception) use ($queryCollector): void {
+                    $queryCollector->addFailedQuery($exception);
+                });
+            }
+        } catch (\Throwable $e) {
+            $this->addCollectorException('Cannot listen to failed queries', $e);
         }
 
         try {
