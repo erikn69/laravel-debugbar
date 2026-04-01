@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.2.2 - 2026-04-01
+
+### What's Changed
+
+* Add debug for failed queries by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2014
+* Use exception handler to get exceptions by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2015
+* Move guideline to skill by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2016
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.1...v4.2.2
+
 ## v4.2.1 - 2026-03-30
 
 ### What's Changed
