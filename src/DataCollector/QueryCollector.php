@@ -466,7 +466,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
         $statements = [];
         $explain = (new Explain());
         foreach ($queries as $query) {
-            if ($query['type'] === 'message') {
+            if (!in_array($query['type'], ['transaction', 'query'], true)) {
                 if (isset($query['xdebug_link'])) {
                     $source = $query['xdebug_link'];
                     $query['xdebug_link'] = $this->getXdebugLink($source->file ?: '', $source->line);
