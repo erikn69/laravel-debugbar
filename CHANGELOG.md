@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.2.3 - 2026-04-03
+
+### What's Changed
+
+* Fix custom types support on QueryCollector addMessage by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2017
+* [RequestCollector] Format middleware var by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2019
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.2...v4.2.3
+
 ## v4.2.2 - 2026-04-01
 
 ### What's Changed
