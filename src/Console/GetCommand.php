@@ -116,31 +116,9 @@ class GetCommand extends Command
     public function dumpResult(array $result, $output = null): ?string
     {
         $reverseFormatter = new ReverseJsonDumper();
-        $result = $this->wrapJsonDumps($result, $reverseFormatter);
-
-        $cloner = new VarCloner();
-        $cloner->addCasters(DebugBarJsonCaster::getCasters());
-        $data = $cloner->cloneVar($result);
+        $data = $reverseFormatter->toCloneVarData($result);
 
         $dumper = new CliDumper();
         return $dumper->dump($data, $output);
-    }
-
-    private function wrapJsonDumps(mixed $data, ReverseJsonDumper $formatter): mixed
-    {
-        if (!is_array($data)) {
-            return $data;
-        }
-
-        // Wrap the data in a special format that the DebugBarJsonCaster can understand
-        if (isset($data['_sd']) && $data['_sd'] === 1) {
-            return new DebugBarJsonVar($data);
-        }
-
-        foreach ($data as $key => $value) {
-            $data[$key] = $this->wrapJsonDumps($value, $formatter);
-        }
-
-        return $data;
     }
 }
