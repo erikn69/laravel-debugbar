@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.2.4 - 2026-04-04
+
+### What's Changed
+
+* Use upstream ReverseFormatter to create Data object for CLI in https://github.com/fruitcake/laravel-debugbar/commit/c6d6766f34c66a3bf823dc044666054f2d5eee61
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.3...v4.2.4
+
 ## v4.2.3 - 2026-04-03
 
 ### What's Changed
