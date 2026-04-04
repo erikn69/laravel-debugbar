@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Fruitcake\LaravelDebugbar\Console;
 
 use DebugBar\DataCollector\Renderable;
-use DebugBar\DataFormatter\VarDumper\DebugBarJsonCaster;
-use DebugBar\DataFormatter\VarDumper\DebugBarJsonVar;
 use DebugBar\DataFormatter\VarDumper\ReverseJsonDumper;
 use Fruitcake\LaravelDebugbar\LaravelDebugbar;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 class GetCommand extends Command
