@@ -1,5 +1,21 @@
 # Changelog
 
+## v4.2.5 - 2026-04-08
+
+### What's Changed
+
+* Bump lodash from 4.17.23 to 4.18.1 by @dependabot[bot] in https://github.com/fruitcake/laravel-debugbar/pull/2021
+* Fix broken links in README by @fadez in https://github.com/fruitcake/laravel-debugbar/pull/2022
+* Bump version, update tests by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2024
+* feat: add editor links to SQL query backtrace entries by @shaffe-fr in https://github.com/fruitcake/laravel-debugbar/pull/2020
+
+### New Contributors
+
+* @fadez made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/2022
+* @shaffe-fr made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/2020
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.4...v4.2.5
+
 ## v4.2.4 - 2026-04-04
 
 ### What's Changed
