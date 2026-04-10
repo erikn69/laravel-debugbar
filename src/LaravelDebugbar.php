@@ -585,7 +585,7 @@ class LaravelDebugbar extends DebugBar
     public function isStorageOpen(Request $request): bool
     {
         // Additional safeguards that may never have storage open
-        if (!$this->isEnabled() || !config('app.debug') || app()->isProduction()) {
+        if (!static::canBeEnabled() || !$this->isEnabled()) {
             return false;
         }
 
