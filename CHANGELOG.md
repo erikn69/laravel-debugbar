@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.2.6 - 2026-04-10
+
+### What's Changed
+
+* Allow Debugbar to be forced to enable on production by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2026
+* Enhance storage open check with additional config by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2027
+
+Adds a flag `DEBUGBAR_FORCE_ALLOW_ENABLE=true` to boot debugbar on production/non-debug modes, for special cases.
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.5...v4.2.6
+
 ## v4.2.5 - 2026-04-08
 
 ### What's Changed
