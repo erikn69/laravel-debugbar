@@ -116,7 +116,7 @@ class QueryCollectorTest extends TestCase
         ));
 
         tap(Arr::first($collector->collect()['statements']), function (array $statement) {
-            $this->assertNull($statement['explain']);
+            $this->assertNull($statement['explain'] ?? null);
         });
     }
 
@@ -135,7 +135,7 @@ class QueryCollectorTest extends TestCase
         ));
 
         tap(Arr::first($collector->collect()['statements']), function (array $statement) {
-            $this->assertNull($statement['explain']);
+            $this->assertNull($statement['explain'] ?? null);
         });
     }
 
@@ -154,7 +154,7 @@ class QueryCollectorTest extends TestCase
         ));
 
         tap(Arr::first($collector->collect()['statements']), function (array $statement) {
-            $this->assertNull($statement['explain']);
+            $this->assertNull($statement['explain'] ?? null);
         });
     }
 
@@ -174,7 +174,7 @@ class QueryCollectorTest extends TestCase
         ));
 
         tap(Arr::first($collector->collect()['statements']), function (array $statement) {
-            $this->assertNull($statement['explain']);
+            $this->assertNull($statement['explain'] ?? null);
         });
     }
 
@@ -193,7 +193,7 @@ class QueryCollectorTest extends TestCase
         ));
 
         tap(Arr::first($collector->collect()['statements']), function (array $statement) {
-            $this->assertNull($statement['explain']);
+            $this->assertNull($statement['explain'] ?? null);
         });
     }
 

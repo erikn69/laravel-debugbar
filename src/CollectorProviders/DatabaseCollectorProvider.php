@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace Fruitcake\LaravelDebugbar\CollectorProviders;
 
 use Fruitcake\LaravelDebugbar\DataCollector\QueryCollector;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Events\ConnectionEstablished;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Database\Events\TransactionRolledBack;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
+use Illuminate\View\ViewException;
 
 class DatabaseCollectorProvider extends AbstractCollectorProvider
 {
-    public function __invoke(Dispatcher $events, Router $router, Request $request, array $options): void
+    public function __invoke(Dispatcher $events, Router $router, Request $request, ExceptionHandler $exceptionHandler, array $options): void
     {
         $queryCollector = new QueryCollector();
         if ($options['timeline'] ?? false) {
@@ -48,6 +51,10 @@ class DatabaseCollectorProvider extends AbstractCollectorProvider
             $queryCollector->mergeBacktraceExcludePaths($excludeBacktracePaths);
         }
 
+        if ($options['backtrace_editor_links'] ?? false) {
+            $queryCollector->setBacktraceEditorLinks(true);
+        }
+
         if (($options['explain'] ?? false) === true && $this->debugbar->isStorageOpen($request)) {
             $queryCollector->setExplainQuery(true);
         }
@@ -77,6 +84,22 @@ class DatabaseCollectorProvider extends AbstractCollectorProvider
             );
         } catch (\Throwable $e) {
             $this->addCollectorException('Cannot listen to Queries', $e);
+        }
+
+        try {
+            if (method_exists($exceptionHandler, 'reportable')) {
+                $exceptionHandler->reportable(function (QueryException $exception) use ($queryCollector): void {
+                    $queryCollector->addFailedQuery($exception);
+                });
+
+                $exceptionHandler->reportable(function (ViewException $exception) use ($queryCollector): void {
+                    if ($exception->getPrevious() instanceof QueryException) {
+                        $queryCollector->addFailedQuery($exception->getPrevious());
+                    }
+                });
+            }
+        } catch (\Throwable $e) {
+            $this->addCollectorException('Cannot listen to Exceptions in Database ExceptionHandler', $e);
         }
 
         try {

@@ -12,7 +12,9 @@ use DebugBar\DataCollector\HasTimeDataCollector;
 use DebugBar\DataCollector\Renderable;
 use DebugBar\DataFormatter\QueryFormatter;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Query\Grammars\Grammar;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -49,6 +51,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
     protected bool $renderSqlWithParams = false;
     protected bool $durationBackground = false;
     protected ?float $slowThreshold = null;
+    protected bool $backtraceEditorLinks = false;
 
     public function getQueryFormatter(): QueryFormatter
     {
@@ -147,6 +150,14 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
         $this->showQueryResult = $enabled;
     }
 
+    /**
+     * Enable/disable editor links on backtrace entries
+     */
+    public function setBacktraceEditorLinks(bool $enabled): void
+    {
+        $this->backtraceEditorLinks = $enabled;
+    }
+
     public function startMemoryUsage(): void
     {
         $this->lastMemoryUsage = memory_get_usage(false);
@@ -187,7 +198,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
             'bindings' => $bindings,
             'start' => $startTime,
             'time' => $time,
-            'memory' => $this->lastMemoryUsage ? memory_get_usage(false) - $this->lastMemoryUsage : 0,
+            'memory' => $this->lastMemoryUsage ? memory_get_usage(false) - $this->lastMemoryUsage : null,
             'source' => $source,
             'connection' => $query->connection,
             'driver' => $query->connection->getConfig('driver'),
@@ -198,12 +209,50 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
         }
     }
 
+    public function addFailedQuery(QueryException $exception): void
+    {
+        $time = microtime(true);
+        $limited = $this->softLimit && $this->queryCount > $this->softLimit;
+        $connection = DB::connection($exception->getConnectionName());
+
+        $source = [];
+        if (!$limited && $this->findSource) {
+            try {
+                $source = $this->findSource($exception->getTrace());
+            } catch (\Exception $e) {
+            }
+        }
+
+        $bindings = match (true) {
+            $limited && filled($exception->getBindings()) => null,
+            default => $connection->prepareBindings($exception->getBindings()),
+        };
+
+        $this->queries[] = [
+            'error_code' => $exception->getCode(),
+            'error_message' => Str::limit($exception->getMessage(), 300),
+            'query' => $exception->getSql(),
+            'type' => 'query',
+            'bindings' => $bindings,
+            'start' => $time,
+            'time' => null,
+            'memory' => null,
+            'source' => $source,
+            'connection' => $connection,
+            'driver' => $connection->getConfig('driver'),
+        ];
+
+        if ($this->hasTimeDataCollector()) {
+            $this->addTimeMeasure(Str::limit($exception->getSql(), 100), $time, $time, [], 'Database Query');
+        }
+    }
+
     /**
      * Use a backtrace to search for the origins of the query.
      */
-    protected function findSource(): array
+    protected function findSource(?array $stack = null): array
     {
-        $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT, app('config')->get('debugbar.debug_backtrace_limit', 50));
+        $stack ??= debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT, app('config')->get('debugbar.debug_backtrace_limit', 50));
 
         $sources = [];
 
@@ -354,7 +403,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
     /**
      * Adds a custom message to statements.
      */
-    public function addMessage(string $message): void
+    public function addMessage(string $message, string $type = 'message'): void
     {
         $this->infoStatements++;
         $source = [];
@@ -368,7 +417,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
 
         $this->queries[] = [
             'sql' => $message,
-            'type' => 'message',
+            'type' => $type,
             'start' => microtime(true),
             ...(count($source) ? ['xdebug_link' => $source[0]] : []),
         ];
@@ -394,8 +443,8 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
             'type' => 'transaction',
             'bindings' => [],
             'start' => microtime(true),
-            'time' => 0,
-            'memory' => 0,
+            'time' => null,
+            'memory' => null,
             'source' => $source,
             'connection' => $connection,
             'driver' => $connection->getConfig('driver'),
@@ -426,7 +475,7 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
         $statements = [];
         $explain = (new Explain());
         foreach ($queries as $query) {
-            if ($query['type'] === 'message') {
+            if (!in_array($query['type'], ['transaction', 'query'], true)) {
                 if (isset($query['xdebug_link'])) {
                     $source = $query['xdebug_link'];
                     $query['xdebug_link'] = $this->getXdebugLink($source->file ?: '', $source->line);
@@ -460,14 +509,21 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
                 $explainModes[] = 'explain';
             }
 
-            $statements[] = [
+            $statements[] = array_filter([
                 'sql' => $this->getSqlQueryToDisplay($query),
                 'type' => $query['type'],
                 'params' => $query['bindings'] ?? [],
-                'backtrace' => array_values($query['source']),
+                'backtrace' => array_map(function ($trace): mixed {
+                    if ($this->backtraceEditorLinks && is_object($trace) && $trace->file !== null && $trace->file !== ''
+                        && !str_starts_with($this->normalizeFilePath($trace->file), 'vendor/')
+                    ) {
+                        $trace->xdebug_link = $this->getXdebugLink($trace->file, $trace->line);
+                    }
+                    return $trace;
+                }, array_values($query['source'])),
                 'start' => $query['start'] ?? null,
                 'duration' => $query['time'],
-                'duration_str' => ($query['type'] === 'transaction') ? '' : $this->getDataFormatter()->formatDuration($query['time']),
+                'duration_str' => $query['time'] ? $this->getDataFormatter()->formatDuration($query['time']) : null,
                 'slow' => $this->slowThreshold && $this->slowThreshold <= $query['time'],
                 'memory' => $query['memory'],
                 'memory_str' => $query['memory'] ? $this->getDataFormatter()->formatBytes($query['memory']) : null,
@@ -483,7 +539,10 @@ class QueryCollector extends DataCollector implements Renderable, AssetProvider,
                     'modes' => $explainModes,
                     'hash' => $explain->hash($query['connection']->getName(), $query['query'], $query['bindings']),
                 ] : null,
-            ];
+                'is_success' => ($query['error_message'] ?? false) ? false : null,
+                'error_code' => $query['error_code'] ?? null,
+                'error_message' => $query['error_message'] ?? null,
+            ], fn($val) => !is_null($val));
         }
 
         if ($this->durationBackground) {

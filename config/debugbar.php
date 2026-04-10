@@ -101,6 +101,7 @@ return [
             ],
             'backtrace'         => env('DEBUGBAR_OPTIONS_DB_BACKTRACE', true),   // Use a backtrace to find the origin of the query in your files.
             'backtrace_exclude_paths' => [],   // Paths to exclude from backtrace. (in addition to defaults)
+            'backtrace_editor_links' => env('DEBUGBAR_OPTIONS_DB_BACKTRACE_EDITOR_LINKS', false), // Add editor links to backtrace entries (non-vendor files only)
             'timeline'          => env('DEBUGBAR_OPTIONS_DB_TIMELINE', false),  // Add the queries to the timeline
             'duration_background'  => env('DEBUGBAR_OPTIONS_DB_DURATION_BACKGROUND', true),   // Show shaded background on each query relative to how long it took to execute.
             'explain'           => env('DEBUGBAR_OPTIONS_DB_EXPLAIN_ENABLED', true), // Show EXPLAIN output on queries
@@ -257,6 +258,21 @@ return [
         'connection' => env('DEBUGBAR_STORAGE_CONNECTION'), // Leave null for default connection (Redis/PDO)
         'provider'   => env('DEBUGBAR_STORAGE_PROVIDER', ''), // Instance of StorageInterface for custom driver
     ],
+
+    /*
+     |--------------------------------------------------------------------------
+     | Force Allow Debugbar to be Enabled during boot
+     |--------------------------------------------------------------------------
+     |
+     | By default, debugbar can only be enabled when the app is in debug mode and not in production.
+     | For special cases, eg admin panels behind proper authentication, you can force debugbar to be enabled.
+     | Just this setting alone will not enable the Debugbar, but it will boot the Debugbar including routes and listeners,
+     | so you can enable it further in the requests using $debugbar->enable().
+     |
+     | Warning: Use with caution. Debugbar is a development tool and should never be exposed in non-trusted endpoints.
+     |
+    */
+    'force_allow_enable' => env('DEBUGBAR_FORCE_ALLOW_ENABLE', false),
 
     /*
      |--------------------------------------------------------------------------
