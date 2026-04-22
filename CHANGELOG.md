@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.2.8 - 2026-04-22
+
+### What's Changed
+
+* fix: allow Debugbar to load with strict form request validation enabled by @fadez in https://github.com/fruitcake/laravel-debugbar/pull/2032
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.7...v4.2.8
+
 ## v4.2.7 - 2026-04-20
 
 ### What's Changed
