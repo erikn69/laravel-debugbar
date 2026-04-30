@@ -53,7 +53,7 @@ class QueriesController
             ]);
         }
 
-        if (!config('debugbar.options.db.explain.enabled', false)) {
+        if (config('debugbar.options.db.explain') !== true) {
             return response()->json([
                 'success' => false,
                 'message' => 'EXPLAIN is currently disabled in the Debugbar.',

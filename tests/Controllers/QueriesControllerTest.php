@@ -11,7 +11,7 @@ class QueriesControllerTest extends DebugbarTest
     public function testExplainReturnsErrorWhenStorageIsNotOpen(): void
     {
         $this->app['config']->set('debugbar.storage.open', false);
-        $this->app['config']->set('debugbar.options.db.explain.enabled', true);
+        $this->app['config']->set('debugbar.options.db.explain', true);
         $this->resetStorageOpen();
 
         $response = $this->postJson('/_debugbar/queries/explain', [
@@ -26,7 +26,7 @@ class QueriesControllerTest extends DebugbarTest
     public function testExplainReturnsErrorWhenExplainIsDisabled(): void
     {
         $this->app['config']->set('debugbar.storage.open', true);
-        $this->app['config']->set('debugbar.options.db.explain.enabled', false);
+        $this->app['config']->set('debugbar.options.db.explain', false);
 
         $response = $this->postJson('/_debugbar/queries/explain', [
             'id' => 'uuid123',
@@ -43,7 +43,7 @@ class QueriesControllerTest extends DebugbarTest
     public function testExplainValidatesRequiredFields(): void
     {
         $this->app['config']->set('debugbar.storage.open', true);
-        $this->app['config']->set('debugbar.options.db.explain.enabled', true);
+        $this->app['config']->set('debugbar.options.db.explain', true);
 
         $response = $this->postJson('/_debugbar/queries/explain', []);
 
@@ -54,7 +54,7 @@ class QueriesControllerTest extends DebugbarTest
     public function testExplainValidatesModeValues(): void
     {
         $this->app['config']->set('debugbar.storage.open', true);
-        $this->app['config']->set('debugbar.options.db.explain.enabled', true);
+        $this->app['config']->set('debugbar.options.db.explain', true);
 
         $response = $this->postJson('/_debugbar/queries/explain', [
             'id' => 'uuid123',
@@ -69,7 +69,7 @@ class QueriesControllerTest extends DebugbarTest
     public function testExplainAcceptsValidModeValues(): void
     {
         $this->app['config']->set('debugbar.storage.open', true);
-        $this->app['config']->set('debugbar.options.db.explain.enabled', true);
+        $this->app['config']->set('debugbar.options.db.explain', true);
 
         foreach (['visual', 'result'] as $mode) {
             $response = $this->postJson('/_debugbar/queries/explain', [
