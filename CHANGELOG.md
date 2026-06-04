@@ -1,5 +1,31 @@
 # Changelog
 
+## v4.3.0 - 2026-06-04
+
+Debugbar now detects the CSP nonce when using Vite CSP or Spatie CSP
+
+### What's Changed
+
+* Add better context to measure in timeline by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2034
+* Remove v4 beta mention from README by @jnoordsij in https://github.com/fruitcake/laravel-debugbar/pull/2038
+* Improve readability of the cache listing by @ssw1cblarrion in https://github.com/fruitcake/laravel-debugbar/pull/2035
+* Simplify explain option on config by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/1998
+* Fix description for `debugbar:get` command by @OussamaMater in https://github.com/fruitcake/laravel-debugbar/pull/2039
+* Get event hash before changing the array to get the start time by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2040
+* Disable audit block for insecure packages on integration tests by @erikn69 in https://github.com/fruitcake/laravel-debugbar/pull/2045
+* Integrate Vite CSP nonce into LaravelDebugbar by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2044
+* Update Composer configuration in integration tests by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2047
+* Delay, detect and reset CSP by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2048
+* Bump postcss from 8.5.6 to 8.5.15 by @dependabot[bot] in https://github.com/fruitcake/laravel-debugbar/pull/2046
+* migrate phpunit by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2049
+* Fix helpers docs by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2050
+
+### New Contributors
+
+* @OussamaMater made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/2039
+
+**Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.2.8...v4.3.0
+
 ## v4.2.8 - 2026-04-22
 
 ### What's Changed
