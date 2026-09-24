@@ -1,5 +1,24 @@
 # Changelog
 
+## v4.4.4 - 2026-09-24
+
+### What's Changed
+
+* Bump @humanfs/node from 0.16.7 to 0.16.8 by @dependabot[bot] in https://github.com/fruitcake/laravel-debugbar/pull/2084
+* Flatten ViewErrorBag/MessageBag with a caster so messages survive max_depth by @AdilAzhariOmsan in https://github.com/fruitcake/laravel-debugbar/pull/2085
+* Clarify wording about local ips, tweak ipv6 check by @barryvdh and @SecFathy in https://github.com/fruitcake/laravel-debugbar/pull/2087
+* Fix encoded route params by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2089
+* Fix AI collector compatibility with Laravel AI 1.x token usage by @olivermbs in https://github.com/fruitcake/laravel-debugbar/pull/2086
+* Allow laravel/ai 0.9-0.11 and test 0.11 in CI by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2090
+* Format session vars by @barryvdh in https://github.com/fruitcake/laravel-debugbar/pull/2088
+
+### New Contributors
+
+* @AdilAzhariOmsan made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/2085
+* @olivermbs made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/2086
+* @SecFathy made their first contribution in https://github.com/fruitcake/laravel-debugbar/pull/2087
+  **Full Changelog**: https://github.com/fruitcake/laravel-debugbar/compare/v4.4.3...v4.4.4
+
 ## v4.4.3 - 2026-09-01
 
 ### What's Changed
