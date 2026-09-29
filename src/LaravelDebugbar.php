@@ -61,6 +61,7 @@ use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\VarDumper\Cloner\Stub;
+use Symfony\Component\VarDumper\VarDumper;
 use Throwable;
 
 /**
@@ -215,6 +216,34 @@ class LaravelDebugbar extends DebugBar
         $this->registerDataFormatter();
 
         $this->registerCollectors();
+        
+        $originalHandler = VarDumper::setHandler(function ($var) use (&$originalHandler): void {
+            try {
+                foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 25) as $trace) {
+                    if (($trace['function'] ?? null) !== 'dd') {
+                        continue;
+                    }
+
+                    $this->addMessage($var);
+                    if ($this->hasCollector('exceptions')) {
+                        /** @var ExceptionsCollector $exceptionCollector */
+                        $exceptionCollector = $this['exceptions'];
+                        $exceptionCollector->addWarning(E_USER_NOTICE, 'Execution terminated by dd().');
+                    }
+
+                    $this->sendDataInHeaders(true);
+                    if (!in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) && !headers_sent()) {
+                        header("phpdebugbar-id: " . $this->getCurrentRequestId());
+                    }
+                }
+            } catch (\Throwable $e) {
+                //
+            }
+
+            if ($originalHandler) {
+                $originalHandler($var);
+            }
+        });
 
         $this->booted = true;
     }
