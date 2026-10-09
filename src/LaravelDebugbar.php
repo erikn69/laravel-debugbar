@@ -352,16 +352,20 @@ class LaravelDebugbar extends DebugBar
      */
     protected function registerVarDumperDdHook(): void
     {
-        $originalHandler = VarDumper::setHandler(function ($var) use (&$originalHandler): void {
+        $flushed = false;
+        $originalHandler = VarDumper::setHandler(function ($var, $label = null) use (&$originalHandler, &$flushed): void {
             try {
-                foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 25) as $trace) {
+                foreach (!$flushed ? debug_backtrace(0, 5) : [] as $trace) {
                     if (($trace['function'] ?? null) !== 'dd') {
                         continue;
                     }
 
-                    $this->messagesCollector->addMessage($var);
+                    foreach ($trace['args'] ?? [] as $k => $arg) {
+                        $this->messagesCollector->addMessage($arg, 'info', ['context' => $k]);
+                    }
                     $this->exceptionsCollector->addWarning(E_USER_NOTICE, 'Execution terminated by dd().', $trace['file'] ?? '', $trace['line'] ?? 0);
                     $this->sendDataInHeaders(true);
+                    $flushed = true;
 
                     if (!in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) && !headers_sent()) {
                         header("phpdebugbar-id: " . $this->getCurrentRequestId());
@@ -384,7 +388,7 @@ class LaravelDebugbar extends DebugBar
             }
 
             if ($originalHandler) {
-                $originalHandler($var);
+                $originalHandler($var, $label);
             }
         });
     }
