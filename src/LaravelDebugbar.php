@@ -216,34 +216,8 @@ class LaravelDebugbar extends DebugBar
         $this->registerDataFormatter();
 
         $this->registerCollectors();
-        
-        $originalHandler = VarDumper::setHandler(function ($var) use (&$originalHandler): void {
-            try {
-                foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 25) as $trace) {
-                    if (($trace['function'] ?? null) !== 'dd') {
-                        continue;
-                    }
 
-                    $this->addMessage($var);
-                    if ($this->hasCollector('exceptions')) {
-                        /** @var ExceptionsCollector $exceptionCollector */
-                        $exceptionCollector = $this['exceptions'];
-                        $exceptionCollector->addWarning(E_USER_NOTICE, 'Execution terminated by dd().');
-                    }
-
-                    $this->sendDataInHeaders(true);
-                    if (!in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) && !headers_sent()) {
-                        header("phpdebugbar-id: " . $this->getCurrentRequestId());
-                    }
-                }
-            } catch (\Throwable $e) {
-                //
-            }
-
-            if ($originalHandler) {
-                $originalHandler($var);
-            }
-        });
+        $this->registerVarDumperDdHook();
 
         $this->booted = true;
     }
@@ -371,6 +345,64 @@ class LaravelDebugbar extends DebugBar
         ]);
 
         DataCollector::setDefaultDataFormatter($formatter);
+    }
+
+    /**
+     * Hook into VarDumper so Debugbar can capture dd() output before the script terminates.
+     */
+    protected function registerVarDumperDdHook(): void
+    {
+        $originalHandler = VarDumper::setHandler(function ($var) use (&$originalHandler): void {
+            try {
+                foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 25) as $trace) {
+                    if (($trace['function'] ?? null) !== 'dd') {
+                        continue;
+                    }
+
+                    $this->addMessage($var);
+                    if ($this->hasCollector('exceptions')) {
+                        /** @var ExceptionsCollector $exceptionCollector */
+                        $exceptionCollector = $this['exceptions'];
+                        $exceptionCollector->addWarning(E_USER_NOTICE, 'Execution terminated by dd().');
+                    }
+
+                    $this->sendDataInHeaders(true);
+                    if (!in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) && !headers_sent()) {
+                        header("phpdebugbar-id: " . $this->getCurrentRequestId());
+                    }
+
+                    // Check if it's safe to inject the Debugbar
+                    $request = request();
+                    if (
+                        config()->get('debugbar.inject', true)
+                        && !$request->ajax()
+                        && !$this->isJsonRequest($request)
+                        && in_array($request->getRequestFormat(), [null, 'html'], true)
+                    ) {
+                        try {
+                            $renderer = $this->getJavascriptRenderer();
+
+                            if ($renderer->getCspNonce() === null) {
+                                $renderer->setCspNonce($this->detectCspNonce());
+                            }
+
+                            echo "<!-- Laravel Debugbar Widget -->\n" . $renderer->renderHead() . $renderer->render();
+                        } catch (Exception $e) {
+                            $this->app['log']->error('Debugbar exception: ' . $e->getMessage(), [
+                                'exception' => $e,
+                            ]);
+                        }
+                    }
+                    break;
+                }
+            } catch (\Throwable $e) {
+                //
+            }
+
+            if ($originalHandler) {
+                $originalHandler($var);
+            }
+        });
     }
 
     public function getJavascriptRenderer(?string $baseUrl = null, ?string $basePath = null): JavascriptRenderer
