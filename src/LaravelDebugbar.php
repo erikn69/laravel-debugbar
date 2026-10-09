@@ -359,14 +359,10 @@ class LaravelDebugbar extends DebugBar
                         continue;
                     }
 
-                    $this->addMessage($var);
-                    if ($this->hasCollector('exceptions')) {
-                        /** @var ExceptionsCollector $exceptionCollector */
-                        $exceptionCollector = $this['exceptions'];
-                        $exceptionCollector->addWarning(E_USER_NOTICE, 'Execution terminated by dd().');
-                    }
-
+                    $this->messagesCollector->addMessage($var);
+                    $this->exceptionsCollector->addWarning(E_USER_NOTICE, 'Execution terminated by dd().', $trace['file'] ?? '', $trace['line'] ?? 0);
                     $this->sendDataInHeaders(true);
+
                     if (!in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true) && !headers_sent()) {
                         header("phpdebugbar-id: " . $this->getCurrentRequestId());
                     }
@@ -436,18 +432,9 @@ class LaravelDebugbar extends DebugBar
      */
     public function handleError(int $level, string $message, string $file = '', int $line = 0, array $context = []): mixed
     {
-        if ($this->hasCollector('exceptions')) {
-            /** @var ExceptionsCollector $exceptionCollector */
-            $exceptionCollector = $this['exceptions'];
-            $exceptionCollector->addWarning($level, $message, $file, $line);
-        }
-
-        if ($this->hasCollector('messages')) {
-            /** @var MessagesCollector $messagesCollector */
-            $messagesCollector = $this['messages'];
-            $file = $file ? ' on ' . $messagesCollector->normalizeFilePath($file) . ":{$line}" : '';
-            $messagesCollector->addMessage($message . $file, 'deprecation');
-        }
+        $this->exceptionsCollector->addWarning($level, $message, $file, $line);
+        $file = $file ? ' on ' . $messagesCollector->normalizeFilePath($file) . ":{$line}" : '';
+        $this->messagesCollector->addMessage($message . $file, 'deprecation');
 
         if (! $this->prevErrorHandler) {
             return null;
