@@ -379,19 +379,7 @@ class LaravelDebugbar extends DebugBar
                         && !$this->isJsonRequest($request)
                         && in_array($request->getRequestFormat(), [null, 'html'], true)
                     ) {
-                        try {
-                            $renderer = $this->getJavascriptRenderer();
-
-                            if ($renderer->getCspNonce() === null) {
-                                $renderer->setCspNonce($this->detectCspNonce());
-                            }
-
-                            echo "<!-- Laravel Debugbar Widget -->\n" . $renderer->renderHead() . $renderer->render();
-                        } catch (Exception $e) {
-                            $this->app['log']->error('Debugbar exception: ' . $e->getMessage(), [
-                                'exception' => $e,
-                            ]);
-                        }
+                        echo $this->getDebugbarWidget();
                     }
                     break;
                 }
@@ -824,6 +812,17 @@ class LaravelDebugbar extends DebugBar
         }
     }
 
+    protected function getDebugbarWidget(): string
+    {
+        $renderer = $this->getJavascriptRenderer();
+
+        if ($renderer->getCspNonce() === null) {
+            $renderer->setCspNonce($this->detectCspNonce());
+        }
+
+        return "<!-- Laravel Debugbar Widget -->\n" . $renderer->renderHead() . $renderer->render();
+    }
+
     /**
      * Injects the web debug toolbar into the given Response.
      *
@@ -833,13 +832,7 @@ class LaravelDebugbar extends DebugBar
     {
         $content = $response->getContent();
 
-        $renderer = $this->getJavascriptRenderer();
-
-        if ($renderer->getCspNonce() === null) {
-            $renderer->setCspNonce($this->detectCspNonce());
-        }
-
-        $widget = "<!-- Laravel Debugbar Widget -->\n" . $renderer->renderHead() . $renderer->render();
+        $widget = $this->getDebugbarWidget();
 
         // Try to put the widget at the end, directly before the </body>
         $pos = strripos($content, '</body>');
