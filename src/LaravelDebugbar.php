@@ -361,7 +361,7 @@ class LaravelDebugbar extends DebugBar
                     }
 
                     foreach ($trace['args'] ?? [] as $k => $arg) {
-                        $this->messagesCollector->addMessage($arg, 'info', ['context' => $k]);
+                        $this->messagesCollector->addMessage($arg, 'info', [(string) $k]);
                     }
                     $this->exceptionsCollector->addWarning(E_USER_NOTICE, 'Execution terminated by dd().', $trace['file'] ?? '', $trace['line'] ?? 0);
                     $this->sendDataInHeaders(true);
