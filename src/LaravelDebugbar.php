@@ -356,7 +356,7 @@ class LaravelDebugbar extends DebugBar
         $originalHandler = VarDumper::setHandler(function ($var, $label = null) use (&$originalHandler, &$flushed): void {
             try {
                 foreach (!$flushed ? debug_backtrace(0, 5) : [] as $trace) {
-                    if (($trace['function'] ?? null) !== 'dd') {
+                    if ($trace['function'] !== 'dd') {
                         continue;
                     }
 
@@ -437,7 +437,7 @@ class LaravelDebugbar extends DebugBar
     public function handleError(int $level, string $message, string $file = '', int $line = 0, array $context = []): mixed
     {
         $this->exceptionsCollector->addWarning($level, $message, $file, $line);
-        $file = $file ? ' on ' . $messagesCollector->normalizeFilePath($file) . ":{$line}" : '';
+        $file = $file ? ' on ' . $this->messagesCollector->normalizeFilePath($file) . ":{$line}" : '';
         $this->messagesCollector->addMessage($message . $file, 'deprecation');
 
         if (! $this->prevErrorHandler) {
